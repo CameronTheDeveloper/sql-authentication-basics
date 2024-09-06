@@ -18,7 +18,7 @@ app.use(session({ secret: "cats", resave: false, saveUninitialized: false }));
 app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/", (req, res) => res.render("index"));
+app.get("/", (req, res) => res.render("index", { user: req.user }));
 app.get("/sign-up", (req, res) => res.render("sign-up-form"));
 
 
@@ -62,11 +62,14 @@ passport.use(
     })
 );
 
-
+// Serialize user data into the session. 
+// This function determines what data will be stored in the session (in this case, just the user ID).
 passport.serializeUser((user, done) => {
     done(null, user.id);
 });
   
+// Deserialize user data from the session.
+// This function retrieves the full user object based on the user ID stored in the session.
 passport.deserializeUser(async (id, done) => {
     try {
         const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
