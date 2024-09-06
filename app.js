@@ -1,5 +1,5 @@
 /////// app.js
-
+require('dotenv').config();
 const { Pool } = require("pg");
 const express = require("express");
 const session = require("express-session");
@@ -7,7 +7,7 @@ const passport = require("passport");
 const LocalStrategy = require('passport-local').Strategy;
 
 const pool = new Pool({
-  // add your configuration
+  connectionString: process.env.DB_LINK
 });
 
 const app = express();
@@ -24,9 +24,9 @@ app.get("/sign-up", (req, res) => res.render("sign-up-form"));
 
 app.post("/sign-up", async (req, res, next) => {
     try {
-      await pool.query("INSERT INTO users (username, password) VALUES ($1, $2)", [
-        req.body.username,
-        req.body.password,
+        await pool.query("INSERT INTO users (username, password) VALUES ($1, $2)", [
+            req.body.username,
+            req.body.password,
       ]);
       res.redirect("/");
     } catch(err) {
